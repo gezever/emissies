@@ -4,7 +4,7 @@ library(leaflet)
 r_colors <- rgb(t(col2rgb(colors()) / 255))
 names(r_colors) <- colors()
 emissiepunten <-
-  read.csv("data/full_table.csv", header = TRUE, encoding = "UTF-8")
+  read.csv("data/full_table1.csv", header = TRUE, encoding = "UTF-8")
 load("data/BE_ADMIN_MUNTY.RData")
 
 ui <- fluidPage(
@@ -46,10 +46,9 @@ ui <- fluidPage(
             "input.color == 'superzip' || input.size == 'superzip'",
             # Only prompt for threshold when coloring or sizing by superzip
             numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-          ),
+          )#,
           
-          plotOutput("test1", height = 200),
-          plotOutput("test2", height = 250)
+          #plotOutput("test1", height = 200)
         ),
         
         tags$div(
@@ -88,10 +87,14 @@ server <- function(input, output, session) {
           stof == input$substance
         )$hoeveelheid,
         by = list(
-          CD_MUNTY_REFNIS = subset(
+          # CD_MUNTY_REFNIS = subset(
+          #   subset(emissiepunten, jaar == input$year),
+          #   stof == input$substance
+          # )$CD_MUNTY_REFNIS
+          TX_MUNTY_DESCR_NL = subset(
             subset(emissiepunten, jaar == input$year),
             stof == input$substance
-          )$CD_MUNTY_REFNIS
+          )$TX_MUNTY_DESCR_NL
         ),
         FUN = sum
       )
@@ -103,7 +106,7 @@ server <- function(input, output, session) {
       merge(
         BE_ADMIN_MUNTY,
         emissiepergemeente,
-        by = "CD_MUNTY_REFNIS",
+        by = "TX_MUNTY_DESCR_NL",
         all.x = TRUE,
         all.y = FALSE
       )
@@ -125,7 +128,7 @@ server <- function(input, output, session) {
       addTiles() %>%
       addLegend(
         title = sprintf(
-          "Emissie van:  %s<br/>voor het jaar: %s<br/> per gemeente in het Vlaams Gewest ",
+          "Emissie (in ton) van:  %s <br/>voor het jaar: %s<br/> per gemeente in het Vlaams Gewest ",
           input$substance,
           input$year
         ),

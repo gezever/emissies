@@ -5,6 +5,8 @@ account: gezever
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 217811
-bundleId: 994053
+bundleId: 1192510
 url: https://gezever.shinyapps.io/imjv_emissies_kaart/
-when: 1506192694.48343
+when: 1516889560.77692
+asMultiple: FALSE
+asStatic: FALSE

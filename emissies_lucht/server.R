@@ -1,9 +1,7 @@
 library(leaflet)
 library(RColorBrewer)
-library(scales)
-library(lattice)
-library(dplyr)
-library(ade4)
+
+
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)

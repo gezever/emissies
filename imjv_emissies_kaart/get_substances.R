@@ -7,7 +7,7 @@ endpoint <- "https://id-ontwikkel.milieuinfo.be/imjv/sparql"
     
     # create query statement
 query <- "
-    PREFIX milieu: <http://id.milieuinfo.be/def#>
+   PREFIX milieu: <https://id.milieuinfo.be/def#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -16,9 +16,9 @@ query <- "
     PREFIX locn: <http://www.w3.org/ns/locn#>
     PREFIX dbo: <http://dbpedia.org/ontology/>
     
-    SELECT ?jaar ?stof ?hoeveelheid ?eenheid ?latitude ?longitude ?refgebied ?CD_MUNTY_REFNIS
-    WHERE {
-    ?subject <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/linked-data/cube#Observation> ;
+    SELECT ?jaar ?stof ?hoeveelheid ?eenheid ?latitude ?longitude ?refgebied ?TX_MUNTY_DESCR_NL
+    WHERE {GRAPH <urn:x-arq:UnionGraph>{
+    ?subject a <http://purl.org/linked-data/cube#Observation> ;
     milieu:referentiegebied ?refgebied ;    
     milieu:hoeveelheid ?hoeveelheid ;
     sdmx:unitMeasure ?unit ;
@@ -26,20 +26,22 @@ query <- "
     
     milieu:substantie ?substantie .
     FILTER ( ?hoeveelheid > 0 )
-    ?substantie  skos:prefLabel ?stof.
-    ?refgebied <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.milieuinfo.be/def#Emissiepunt> ;
+    ?substantie  skos:prefLabel ?s.
+    ?refgebied a milieu:Emissiepunt ;
     milieu:exploitatie ?xtie ;
     geo:lat ?latitude ;
     geo:long ?longitude .
     ?unit skos:altLabel ?eenheid .
+    BIND (STR(?s)  AS ?stof) 
+    }
     SERVICE <http://lodcbbomv-on-1.vm.cumuli.be:8080/lodomv/repositories/cbb> {
     ?xtie locn:address ?adres .
-    ?adres dbo:nisCode ?nis .
+    ?adres <http://www.w3.org/ns/locn#postName>  ?label.
+    FILTER (lang(?label) = 'nl')
+    BIND (STR(?label)  AS ?TX_MUNTY_DESCR_NL) 
     }
-    ?nis a skos:Concept;
-    skos:inScheme <http://id.fedstats.be/conceptscheme/nis#id>;
-    skos:notation ?CD_MUNTY_REFNIS .
     }
+limit 5000
 "
 
     
@@ -47,6 +49,6 @@ query <- "
     qd <- SPARQL(endpoint,query)
     df <- qd$results
     #print(df, quote = TRUE, row.names = FALSE)
-    full_table<-rbind(df)?
+    full_table<-rbind(df)
     write.csv(full_table, file = "data/full_table1.csv")
 
