@@ -2,8 +2,9 @@ library(SPARQL)
 
     
     # Step 1 - Set up preliminaries and define query
-    # Define the data.gov endpoint
-endpoint <- "https://id-ontwikkel.milieuinfo.be/imjv/sparql"
+    # Define the endpoint
+ #endpoint <- "http://lodomv-on-2.vm.cumuli.be:8100/imjv/sparql"
+endpoint <- "http://rdfstoreomv-on-1.vm.cumuli.be:3030/rdfstoreomv/archive/query"
     
     # create query statement
 query <- "
@@ -41,7 +42,7 @@ query <- "
     BIND (STR(?label)  AS ?TX_MUNTY_DESCR_NL) 
     }
     }
-limit 5000
+
 "
 
     
@@ -50,5 +51,5 @@ limit 5000
     df <- qd$results
     #print(df, quote = TRUE, row.names = FALSE)
     full_table<-rbind(df)
-    write.csv(full_table, file = "data/full_table1.csv")
+    write.csv(full_table, file = "data/full_table2.csv")
 

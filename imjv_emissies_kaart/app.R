@@ -3,8 +3,9 @@ library(leaflet)
 
 r_colors <- rgb(t(col2rgb(colors()) / 255))
 names(r_colors) <- colors()
-emissiepunten <-
-  read.csv("data/full_table1.csv", header = TRUE, encoding = "UTF-8")
+#emissiepunten <-read.csv("data/full_table.csv", header = TRUE, encoding = "UTF-8")
+# saveRDS(emissiepunten, file = "data/emissies.Rds")
+emissiepunten <- readRDS(file = "data/emissies.Rds")
 load("data/BE_ADMIN_MUNTY.RData")
 
 ui <- fluidPage(
@@ -39,8 +40,8 @@ ui <- fluidPage(
           
           h2("Verken de Vervuiling"),
           
-          selectInput(inputId = "year", label = "jaar", unique(unlist(emissiepunten$jaar))),
-          selectInput(inputId = "substance", label = "stof", unique(unlist(emissiepunten$stof))),
+          selectInput(inputId = "year", label = "jaar", sort(unique(unlist(emissiepunten$jaar)))),
+          selectInput(inputId = "substance", label = "stof", sort(unique(unlist(emissiepunten$stof)))),
           #selectInput("size", "Size", unique(unlist(emissiepunten$stof)), selected = "adultpop"),
           conditionalPanel(
             "input.color == 'superzip' || input.size == 'superzip'",
@@ -99,9 +100,9 @@ server <- function(input, output, session) {
         FUN = sum
       )
     
-    data(BE_ADMIN_MUNTY)
+    #data(BE_ADMIN_MUNTY)
    
-    str(BE_ADMIN_MUNTY@data)
+    #str(BE_ADMIN_MUNTY@data)
     map <-
       merge(
         BE_ADMIN_MUNTY,
@@ -144,7 +145,7 @@ server <- function(input, output, session) {
         popup = sprintf("%s %s",
                         map$x, 'ton/jaar')
       )
-    
+
     m <-
       addPolylines(
         m,
@@ -154,7 +155,7 @@ server <- function(input, output, session) {
       )
     
     m
-    
+   
     
   })
 }
